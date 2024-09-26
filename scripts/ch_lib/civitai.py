@@ -66,6 +66,25 @@ def get_model_info_by_hash(hash:str):
         util.printD(r.text)
         return
     
+    r2 = requests.get(url_dict["modelId"]+str(r.modelId), headers=util.def_headers, proxies=util.proxies)
+    if not r2.ok:
+        if r2.status_code == 404:
+            # this is not a civitai model
+            util.printD("Civitai does not have this model")
+            return {}
+        else:
+            util.printD("Get error code: " + str(r2.status_code))
+            util.printD(r2.text)
+            return
+    
+    try:
+        content = r2.json()
+    except Exception as e:
+        util.printD("Parse response json failed")
+        util.printD(str(e))
+        util.printD("response:")
+        util.printD(r2.text)
+        return
     if not content:
         util.printD("error, content from civitai is None")
         return
